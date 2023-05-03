@@ -59,7 +59,7 @@ window.Destroy();
 ### Usage
 A shader in EasyGL can be seen as any object that is drawn to the screen like Images, Text or 3D Models. They take in the verticies as well as the amount of verticies and an ShaderUpdate function which is optional but useful to update the shader values in order to not cramp your code too much. It also has the advantage of being able to update multiple shader using the same update routine when it is useful.
 
-The Shader setup is to be called after CreateWindow() but before StartWindow().
+The Shader setup is to be called after creating a Window but before Window::Show().
 
 ```C
 //									Title	 |Width|Height|Number of shaders
