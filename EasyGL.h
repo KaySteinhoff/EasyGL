@@ -1,2 +1,2 @@
-#include "window.h"
+#include "GUI.h"
 #include "text.h"
