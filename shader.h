@@ -63,7 +63,6 @@ class Shader
 	}
 
 public:
-	GLuint texture;
 	GLuint id;
 
 	GLuint vbo;

@@ -5,8 +5,8 @@ class Image : public Shader
 	Window* parent;
 
 public:
-	float x, y;
-	
+	GLuint texture;
+
 	Image(const char* path, int x, int y, Window* parent, const char* vertexShader, const char* fragmentShader) : Shader(vertexShader, fragmentShader)
 	{	
 		this->parent = parent;
@@ -40,13 +40,11 @@ public:
 		mat4x4_identity(this->transform);
 		mat4x4_scale_aniso(this->transform, t, width/(float)height, 1.0, 1.0);
 
-		this->x = this->transform[0][0];
-		this->y = this->transform[1][1];
+		this->scale[0] = this->transform[0][0];
+		this->scale[1] = this->transform[1][1];
 
 		stbi_image_free(data);
-		
-		printf("done");
-	}
+		}
 	
 	void Show() 
 	{
@@ -55,7 +53,7 @@ public:
 
 		mat4x4_identity(tmp);
 		mat4x4_identity(this->transform);
-		mat4x4_scale_aniso(this->transform, tmp, x*this->zoom, y*this->zoom, 1.0);
+		mat4x4_scale_aniso(this->transform, tmp, scale[0]*this->zoom, scale[1]*this->zoom, 1.0);
 
 		this->ShaderUpdate(this->id, this->transform);
 		glActiveTexture(GL_TEXTURE0);

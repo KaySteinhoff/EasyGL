@@ -36,10 +36,10 @@ window.RenderFunction = MyRenderFunction;
 
 The RenderFunction will be called every frame.
 
-After this the CreateWindow() function has to be called to setup the backend of the window. Then just call StartWindow() and Destroy() to start it and after the user closes it have it be cleaned up.
+After this create a window object to setup the backend of the window. Then just call Window::Show() to start it and Window::Destroy() to clean everything up after the user closes it.
 
 ```C
-//									Title	 |Width|Height|Number of shaders
+//                       Title	 |Width|Height|Number of shaders
 Window window = Window("Easy2Edit", 1366, 720  ,		  2		  );
 
 window.backgroundColor[0] = 0.2;
