@@ -89,11 +89,17 @@ public:
 	const char* txt;
 	int x, y;
 	
-	Text(const char* font, int fontSize, const char* txt, Window* parent) : Shader("include/textShader.vert", "include/textShader.frag")
+	Text(const char* font, int fontSize, const char* txt, Window* parent) : Shader("", "")
 	{
 		this->fontSize = fontSize;
 		this->txt = txt;
 		this->parent = parent;
+		
+		//Vertex shader
+		LoadPartialShader(GL_VERTEX_SHADER, &this->vertexShader, "#version 110\nattribute vec4 coord;varying vec2 texcoord;uniform mat4 p;void main(void){gl_Position = p * vec4(coord.xy, 1, 1);texcoord = coord.zw;}");
+
+		//Fragment shader
+		LoadPartialShader(GL_FRAGMENT_SHADER, &this->fragmentShader, "#version 110\nvarying vec2 texcoord;uniform sampler2D tex;uniform vec3 color;void main(){vec4 sampled = vec4(1.0, 1.0, 1.0, texture2D(tex, texcoord).r);gl_FragColor = vec4(color, 1.0) * sampled;}");
 		
 		if(FT_Init_FreeType(&fl))
 		{
