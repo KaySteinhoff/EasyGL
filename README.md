@@ -1,6 +1,6 @@
 # EasyGL an OpenGL framework for C/C++
 
-##Table of contents
+## Table of contents
 
 [About](#About)
 
