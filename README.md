@@ -64,11 +64,6 @@ Image img = Image("Example.jpg", 0, 0, &window);
 window.shader[0] = &img;
 window.shader[0]->ShaderUpdate = MyShaderUpdate;
 
-//Set the verticies
-window.shader[0]->num = sizeof(verticies)/sizeof( verticies[0]);
-window.shader[0]->verticies = malloc(window.shader[0]->num*sizeof(float));
-memcpy(window.shader[0]->verticies, verticies, sizeof(verticies));
-
 //Start the run loop and show the window
 window.Show();
 ```
