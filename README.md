@@ -6,11 +6,11 @@
 
 [1. How to use](#Use)
 
-[1.1 Window](#Window)
+[	1.1 Window](#Window)
 
-[1.2 Shaders](#Shaders)
+[	1.2 Shaders](#Shaders)
 
-[1.3 Events](#Events)
+[	1.3 Events](#Events)
 
 [2. Shipped classes](#Shipped)
 
