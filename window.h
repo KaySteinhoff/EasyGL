@@ -1,4 +1,5 @@
 #include "shader.h"
+#include "Mouse.h"
 
 class Window
 {
@@ -41,6 +42,8 @@ class Window
 		
 	}
 
+	int cx, cy;
+
 public:
 	GLFWwindow* handle;
 	int width;
@@ -49,6 +52,8 @@ public:
 	vec3 backgroundColor;
 
 	void (*RenderFunction)();
+	
+	void (*MouseMove)(int dx, int dy);
 	
 	void (*MouseLeftButtonDown)(int mods);
 	void (*MouseLeftButtonUp)(int mods);
@@ -106,20 +111,8 @@ public:
 	void Show()
 	{
 		for(int i = 0; i < numShaders; ++i)
-		{
-			glGenBuffers(1, &shader[i]->vbo);
-			glBindBuffer(GL_ARRAY_BUFFER, shader[i]->vbo);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*shader[i]->num, shader[i]->verticies, GL_STATIC_DRAW);
-			glGenVertexArrays(1, &shader[i]->vao);
-			glBindVertexArray(shader[i]->vao);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
-			glEnableVertexAttribArray(1);
-
 			shader[i]->ShaderUpdate(shader[i]->id, shader[i]->transform);
-		}
-
+		
 		mat4x4 tmp;
 		while(!glfwWindowShouldClose(handle))
 		{
@@ -182,6 +175,17 @@ public:
 				if(KeyUp != 0)
 					KeyUp(_key, charMods);
 				kold = keyDown;
+			}
+
+			double xpos, ypos;
+			glfwGetCursorPos(handle, &xpos, &ypos);
+	
+			if(cx != xpos || cy != ypos)
+			{
+				if(MouseMove != 0)
+					MouseMove(xpos-cx, ypos-cy);
+				Mouse::X = xpos;
+				Mouse::Y = ypos;
 			}
 
 			this->RenderFunction();

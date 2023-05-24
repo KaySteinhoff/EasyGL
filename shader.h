@@ -19,6 +19,10 @@ typedef struct
 
 class Shader
 {
+protected:
+	float *verticies;
+	int num;
+
 	const char* LoadSource(const char* path)
 	{
 		char* source;
@@ -45,21 +49,17 @@ class Shader
 		return source;
 	}
 
-	void LoadPartialShader(GLenum shaderType, PartialShader* shader, const char* path)
+	void LoadShaderValues(GLenum usage)
 	{
-		//Load shader source
-		const char* shaderSource = LoadSource(path);
-
-		shader->id = glCreateShader(shaderType);
-		glShaderSource(shader->id, 1, &shaderSource, NULL);
-		glCompileShader(shader->id);
-
-		//Reading infolog and success
-		glGetShaderiv(shader->id, GL_COMPILE_STATUS, &shader->success);
-		glGetShaderInfoLog(shader->id, 512, NULL, shader->infoLog);
-
-		//Print possible shader errors
-		printf("%s", shader->infoLog);
+		glGenBuffers(1, &vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*num, verticies, usage);
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
+		glEnableVertexAttribArray(1);
 	}
 
 public:
@@ -79,21 +79,35 @@ public:
 
 	int success;
 	char infoLog[512];
-	float *verticies;
-	int num;
 
 	void (*ShaderUpdate)(GLint, mat4x4);
-	void (*OnClick)();
 	
 	virtual void Show() = 0;
 	
+	void LoadPartialShader(GLenum shaderType, PartialShader* shader, const char* shaderSource)
+	{
+		shader->id = glCreateShader(shaderType);
+		glShaderSource(shader->id, 1, &shaderSource, NULL);
+		glCompileShader(shader->id);
+
+		//Reading infolog and success
+		glGetShaderiv(shader->id, GL_COMPILE_STATUS, &shader->success);
+		glGetShaderInfoLog(shader->id, 512, NULL, shader->infoLog);
+
+		//Print possible shader errors
+		printf("%s", shader->infoLog);
+	}
+	
 	Shader(const char* vertexShader, const char* fragmentShader)
 	{
+		if(!strcmp(vertexShader, "") || !strcmp(fragmentShader, ""))
+			return;
+	
 		//Vertex shader
-		LoadPartialShader(GL_VERTEX_SHADER, &this->vertexShader, vertexShader);
+		LoadPartialShader(GL_VERTEX_SHADER, &this->vertexShader, LoadSource(vertexShader));
 
 		//Fragment shader
-		LoadPartialShader(GL_FRAGMENT_SHADER, &this->fragmentShader, fragmentShader);
+		LoadPartialShader(GL_FRAGMENT_SHADER, &this->fragmentShader, LoadSource(fragmentShader));
 
 		//Attaching them to the final Shader
 		this->id = glCreateProgram();
