@@ -105,10 +105,10 @@ Image and Text actually do just that.
 
 ```C
 //Vertex shader
-		LoadPartialShader(GL_VERTEX_SHADER, &this->vertexShader, "#version 110\nattribute vec3 aPos;void main(){gl_Position = vec4(aPos, 1.0);}");
+LoadPartialShader(GL_VERTEX_SHADER, &this->vertexShader, "#version 110\nattribute vec3 aPos;void main(){gl_Position = vec4(aPos, 1.0);}");
 
-		//Fragment shader
-		LoadPartialShader(GL_FRAGMENT_SHADER, &this->fragmentShader, "#version 110\nvoid main(){gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);}");
+//Fragment shader
+LoadPartialShader(GL_FRAGMENT_SHADER, &this->fragmentShader, "#version 110\nvoid main(){gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);}");
 ```
 
 This changed the Vertex shader to use the raw vertex position handed to it and the fragment shader to always return white.
