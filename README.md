@@ -1,12 +1,19 @@
 # EasyGL an OpenGL framework for C/C++
 
 ##Table of contents
+
 [About](#About)
+
 [1. How to use](#Use)
-	[1.1 Window](#Window)
-	[1.2 Shaders](#Shaders)
-	[1.3 Events](#Events)
+
+[1.1 Window](#Window)
+
+[1.2 Shaders](#Shaders)
+
+[1.3 Events](#Events)
+
 [2. Shipped classes](#Shipped)
+
 [3. Create a class deriven from Shader](#Create)
 
 <a name="About">
