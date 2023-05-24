@@ -129,15 +129,24 @@ It is important to know that only one function can be subscribed to the event at
 
 List of all events:
 
+### Window
 Window::MouseMove 					Parameters: int deltaX, int deltaY
+
 Window::MouseLeftButtonDown 		Parameters: int mods
+
 Window::MouseLeftButtonUp 			Parameters: itn mods
+
 Window::MouseRightButtonDown 		Parameters: int mods
+
 Window::MouseRightButtonUp 		Parameters: int mods
+
 Window::KeyDown 						Parameters: int key, int mods
+
 Window::KeyUp 							Parameters: int key, int mods
+
 Window::Resize 						Parameters: None
 
+### Image
 Image::OnClick 						Parameters: None
 
 ## Shipped classes
