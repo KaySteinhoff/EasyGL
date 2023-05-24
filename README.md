@@ -17,14 +17,17 @@
 [3. Create a class deriven from Shader](#Create)
 
 <a name="About">
+
 ## About
 
 EasyGL uses GLFW to create an OpenGL window and tries to give the user the biggest range of possibilities while it handles the OpenGL backen. It also makes using shaders much more easy through the LoadShader() function. This takes the source path and boom: a working shader ready to use in your window.
 
 <a name="Use">
+
 ## How to use
 
 <a name="Window">
+
 ### Window
 
 ### Functions
@@ -73,6 +76,7 @@ window.Destroy();
 ```
 
 <a name="Shaders">
+
 ### Shaders
 
 ### Usage
@@ -136,6 +140,7 @@ This changed the Vertex shader to use the raw vertex position handed to it and t
 This is not a feature that is meant to be used easily, as knowledge of shaders is required, and I'm going to asume that if you know what Vertex and Fragment shaders are you'll know how to use it. ;)
 
 <a name="Events">
+
 ### Events
 
 Events can be subscribed to by treating it like a variable and setting a function equal to it.
@@ -163,6 +168,7 @@ List of all events:
 |Image::OnClick|None|
 
 <a name="Shipped">
+
 ## Shipped classes
 
 EasyGL ships three classes as default: Image, Text and Mouse. Both are deriven from Shader as they are rendered to the screen and have a Shader::Show() function to update/redraw them.
@@ -190,6 +196,7 @@ This will cause a shadow effect using a single text instance.
 The Mouse class is not a shader but holds a static X and Y position of the cursor on the window.
 
 <a name="Create">
+
 ## Create a class deriven from Shader
 
 ### Setup
