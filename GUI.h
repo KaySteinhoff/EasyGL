@@ -14,7 +14,7 @@ public:
 
 	int width, height;
 
-	void (*OnClick)();
+	EventHandler<void (*)()> OnClick;
 
 	Image(const char* path, float x, float y, Window* parent) : Shader("", "")
 	{
@@ -157,8 +157,7 @@ public:
 			
 		if(x < this->x+width*scale[0] && x > this->x)
 			if(y < this->y+height*scale[1] && y > this->y)
-				if(OnClick != 0)
-					OnClick();
+				OnClick();
 	}
 	
 };

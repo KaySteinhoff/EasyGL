@@ -1,5 +1,6 @@
 #include "shader.h"
 #include "Mouse.h"
+#include "EventHandler.h"
 
 class Window
 {
@@ -53,18 +54,26 @@ public:
 
 	void (*RenderFunction)();
 	
-	void (*MouseMove)(int dx, int dy);
+	EventHandler<void (*)(int, int)> MouseMove;
+	//void (*MouseMove)(int dx, int dy);
+		
+	EventHandler<void (*)(int)> MouseLeftButtonDown;
+	//void (*MouseLeftButtonDown)(int mods);
+	EventHandler<void (*)(int)> MouseLeftButtonUp;
+	//void (*MouseLeftButtonUp)(int mods);
 	
-	void (*MouseLeftButtonDown)(int mods);
-	void (*MouseLeftButtonUp)(int mods);
+	EventHandler<void (*)(int)> MouseRightButtonDown;
+	//void (*MouseRightButtonDown)(int mods);
+	EventHandler<void (*)(int)> MouseRightButtonUp;
+	//void (*MouseRightButtonUp)(int mods);
 	
-	void (*MouseRightButtonDown)(int mods);
-	void (*MouseRightButtonUp)(int mods);
+	EventHandler<void (*)(int, int)> KeyDown;
+	//void (*KeyDown)(int key, int mods);
+	EventHandler<void (*)(int, int)> KeyUp;
+	//void (*KeyUp)(int key, int mods);
 	
-	void (*KeyDown)(int key, int mods);
-	void (*KeyUp)(int key, int mods);
-	
-	void (*Resize)();
+	EventHandler<void (*)()> Resize;
+	//void (*Resize)();
 	
 	int numShaders;
 	Shader **shader;
@@ -129,8 +138,7 @@ public:
 				this->width = width;
 				this->height = height;
 				
-				if(Resize != 0)
-					Resize();
+				Resize();
 			}
 			
 			glViewport(0, 0, width, height);
@@ -141,39 +149,33 @@ public:
 
 			if(mLeftDown && mLeftDown != Lold)
 			{
-				if(MouseLeftButtonDown != 0)
-					MouseLeftButtonDown(_mods);
+				MouseLeftButtonDown(_mods);
 				Lold = mLeftDown;
 			}
 			else if(!mLeftDown && mLeftDown != Lold)
 			{
-				if(MouseLeftButtonUp != 0)
-					MouseLeftButtonUp(_mods);
+				MouseLeftButtonUp(_mods);
 				Lold = mLeftDown;
 			}
 			
 			if(mRightDown && mRightDown != Rold)
 			{
-				if(MouseRightButtonDown != 0)
-					MouseRightButtonDown(_mods);
+				MouseRightButtonDown(_mods);
 				Rold = mRightDown;
 			}
 			else if(!mRightDown && mRightDown != Rold)
 			{
-				if(MouseRightButtonUp != 0)
-					MouseRightButtonUp(_mods);
+				MouseRightButtonUp(_mods);
 				Rold = mRightDown;
 			}
 
 			if(keyDown && keyDown != kold)
 			{
-				if(KeyDown != 0)
-					KeyDown(_key, charMods);
+				KeyDown(_key, charMods);
 				kold = keyDown;
 			}else if(!keyDown && keyDown != kold)
 			{
-				if(KeyUp != 0)
-					KeyUp(_key, charMods);
+				KeyUp(_key, charMods);
 				kold = keyDown;
 			}
 
@@ -182,12 +184,11 @@ public:
 	
 			if(cx != xpos || cy != ypos)
 			{
-				if(MouseMove != 0)
-					MouseMove(xpos-cx, ypos-cy);
+				MouseMove(xpos-cx, ypos-cy);
 				Mouse::X = xpos;
 				Mouse::Y = ypos;
 			}
-
+						
 			this->RenderFunction();
 
 			glfwSwapBuffers(handle);

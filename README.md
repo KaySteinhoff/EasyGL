@@ -143,15 +143,22 @@ This is not a feature that is meant to be used easily, as knowledge of shaders i
 
 ### Events
 
-Events can be subscribed to by treating it like a variable and setting a function equal to it.
+Events can be subscribed to similar to WinForms and setting it to a function.
 
 ```C
+//The event logic
+void MyMouseMove(int dx, int dy)
+{
+	printf("Mouse was moved by: %d, %d", dx, dy);
+}
 
-window.MouseMove = MyMouseMove;
+//code...
+
+window.MouseMove += MyMouseMove;
 
 ```
 
-It is important to know that only one function can be subscribed to the event at a time. (Improvements are planed)
+You can subscribe to one event with multiple functions at the same time.
 
 List of all events:
 
@@ -159,7 +166,7 @@ List of all events:
 |---|---|
 |Window::MouseMove|int deltaX, int deltaY|
 |Window::MouseLeftButtonDown|int mods|
-|Window::MouseLeftButtonUp|itn mods|
+|Window::MouseLeftButtonUp|int mods|
 |Window::MouseRightButtonDown|int mods|
 |Window::MouseRightButtonUp|int mods|
 |Window::KeyDown|int key, int mods|
@@ -184,12 +191,32 @@ Show() is the default function required by Shader in order to render the Image t
 CheckClick(double x, double y) checks whether or not the provided x and y coordinates lay inside the image.
 If this is the case it will call the OnClick event should it be subscribed to.
 
+### Constructor
+
+The Image constructor takes in four arguments: Image path, x, y, parent window.
+
+```C
+Image img = Image("C:/User/You/Images/Example.jpg", 0, 0, &parentWindow);
+```
+
+The parent window should be set to the Window it is rendered in. This is because it needs to scale with the window resolution to keep its relative position to it.
+
 ### Text class
 
 The Text class is just a default class with the default Show() function provided by the Shader class.
 
 Quick tip: one text instance can draw multiple different things to the screen i.e.: should you want to draw "Hello World" in red to the screen but also want a shadow underneath it you can change the color of it to black set it to an offset call Show() change the color and position back and call Show() again.
 This will cause a shadow effect using a single text instance.
+
+### Constructor
+
+The Text constructor takes in four Parameters the path to the font to use, the font size, the default Text and the parent window.
+
+Just as with the window the parent window should be the window its rendered in because it needs to reposition and scale accordingly to it.
+
+```C
+Text txt = Text("C:/User/You/ariel.ttf", 1, "Example", &parentWindow);
+```
 
 ### Mouse class
 
