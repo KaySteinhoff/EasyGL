@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,12 +19,51 @@ typedef struct
 	char infoLog[512];
 }PartialShader;
 
-class Shader
+class IEventListener
+{
+	
+};
+
+class Shader : public IEventListener
 {
 protected:
 	float *verticies;
 	int num;
 
+	void LoadShaderValues(GLenum usage)
+	{
+		glGenBuffers(1, &vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*num, verticies, usage);
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
+		glEnableVertexAttribArray(1);
+	}
+
+public:
+	GLuint id;
+
+	GLuint vbo;
+	GLuint vao;
+
+	PartialShader vertexShader;
+	PartialShader fragmentShader;
+
+	mat4x4 transform;
+	vec3 position;
+	vec3 rotation;
+	vec3 scale;
+
+	int success;
+	char infoLog[512];
+
+	void (*ShaderUpdate)(GLint, mat4x4);
+	
+	virtual void Show() = 0;
+	
 	const char* LoadSource(const char* path)
 	{
 		char* source;
@@ -48,41 +89,6 @@ protected:
 
 		return source;
 	}
-
-	void LoadShaderValues(GLenum usage)
-	{
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*num, verticies, usage);
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
-		glEnableVertexAttribArray(1);
-	}
-
-public:
-	GLuint id;
-
-	GLuint vbo;
-	GLuint vao;
-
-	PartialShader vertexShader;
-	PartialShader fragmentShader;
-
-	mat4x4 transform;
-	float zoom;
-	vec3 position;
-	vec3 rotation;
-	vec3 scale;
-
-	int success;
-	char infoLog[512];
-
-	void (*ShaderUpdate)(GLint, mat4x4);
-	
-	virtual void Show() = 0;
 	
 	void LoadPartialShader(GLenum shaderType, PartialShader* shader, const char* shaderSource)
 	{

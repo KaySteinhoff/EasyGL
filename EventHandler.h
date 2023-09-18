@@ -1,61 +1,65 @@
-#include <iostream>
-#include <vector>
-#include <initializer_list>
+#pragma once
 
-using namespace std;
+#include <functional>
+#include <list>
+#include <algorithm>
+#include <utility>
+#include <atomic>
+#include <mutex>
+#include <future>
+#include <any>
 
-template <typename F>class EventListener
+class EventArgs {};
+
+class BaseEmmiter
 {
-	int dummy = 0;
 public:
-	F Func;
-
-	template<typename... Args>
-	int & operator()(Args... args)
-	{	
-		Func(args...);
-		return dummy;
-	}
+	virtual void Callback(EventArgs* args) = 0;
 
 };
 
-template <typename T> class EventHandler
+template<class T>
+class Emmiter : public BaseEmmiter
 {
-	vector<EventListener<T>> vec;
+public:
+	
+	T* m_obj;
+	void(T::*m_func)(EventArgs*);
+		
+	Emmiter(T* obj, void(T::*func)(EventArgs*)) : m_obj(obj), m_func(func) {}
+	
+	void Callback(EventArgs* args) override
+	{
+		(m_obj->*m_func)(args);
+	}
+};
+
+class EventHandler
+{
+private:
+	int dummy = 0;
+	std::vector<BaseEmmiter*> emmiters;
 	
 public:
-	int length;
-
-	int& operator +=(T func)
+	
+	template<class T>
+	void AddListener(T* obj, void(T::*func)(EventArgs*))
 	{
-		EventListener<T> listener;
-		listener.Func = func;
-		vec.push_back(listener);
-		length++;
-		return length;
+		emmiters.push_back(new Emmiter(obj, func));
 	}
 	
-	int& operator -=(T func)
+	void RemoveListener(int index)
 	{
-		for(int i = 0;i < length; ++i)
+		emmiters.erase(emmiters.begin()+index);
+	}
+	
+	int& operator()(EventArgs* args)
+	{
+		for(int i = 0; i < emmiters.size(); ++i)
 		{
-			if(vec[i].Func == func)
-			{
-				vec.erase(vec.begin()+i);
-				length--;
-				return length;
-			}
+			emmiters[i]->Callback(args);
 		}
-		return length;
+		return dummy;
 	}
-
-	template<typename... G>
-	int& operator()(G... args)
-	{
-		for(int i = 0; i < length; ++i)
-			vec[i](args...);
-			
-		return length;
-	}
-
+	
 };

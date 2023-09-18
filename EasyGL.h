@@ -1,2 +1,6 @@
-#include "GUI.h"
+#include "shader.h"
+#include "Mouse.h"
+#include "EventHandler.h"
+#include "window.h"
 #include "text.h"
+#include "GUI.h"

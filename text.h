@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,6 +17,7 @@ typedef struct
 
 class Text : public Shader
 {
+protected:
 	void LoadASCII()
 	{
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -63,6 +66,13 @@ class Text : public Shader
 
 	Window* parent;
 	
+	//OpenGL related variables
+	GLuint tex_uniform;
+	GLuint color_uniform;
+	GLuint coord_attribute;
+	
+	GLuint vbo, vao;
+	
 public:
 	//Shader
 	GLfloat color[3];
@@ -73,21 +83,12 @@ public:
 	FT_Face ff;
 	FT_GlyphSlot fg;
 	
-	const char* font;
 	int fontSize;
-	float sx, sy;
 	Character* chars;
-	
-	//OpenGL related variables
-	GLuint tex;
-	GLuint tex_uniform;
-	GLuint color_uniform;
-	GLuint coord_attribute;
-	
-	GLuint vbo, vao;
 	
 	const char* txt;
 	int x, y;
+	int width, height;
 	
 	Text(const char* font, int fontSize, const char* txt, Window* parent) : Shader("", "")
 	{
@@ -101,6 +102,18 @@ public:
 		//Fragment shader
 		LoadPartialShader(GL_FRAGMENT_SHADER, &this->fragmentShader, "#version 110\nvarying vec2 texcoord;uniform sampler2D tex;uniform vec3 color;void main(){vec4 sampled = vec4(1.0, 1.0, 1.0, texture2D(tex, texcoord).r);gl_FragColor = vec4(color, 1.0) * sampled;}");
 		
+		//Attaching them to the final Shader
+		this->id = glCreateProgram();
+		glAttachShader(this->id, this->vertexShader.id);
+		glAttachShader(this->id, this->fragmentShader.id);
+		glLinkProgram(this->id);
+
+		//Reading infolog and success
+		glGetProgramiv(this->id, GL_LINK_STATUS, &success);
+		glGetProgramInfoLog(this->id, 512, NULL, infoLog);
+
+		printf("%s\n", infoLog);
+		
 		if(FT_Init_FreeType(&fl))
 		{
 			printf("Could not load freetype2!\n");
@@ -113,7 +126,7 @@ public:
 			return;
 		}
 
-		FT_Set_Pixel_Sizes(ff, 0, 48);
+		FT_Set_Pixel_Sizes(ff, 0, fontSize);
 
 		if(FT_Load_Char(ff, 'X', FT_LOAD_RENDER))
 		{
@@ -142,6 +155,11 @@ public:
 	
 	void Show()
 	{
+		width = 0;
+		height = 0;
+		int tmpX = x;
+		int tmpY = y;
+		
 		mat4x4 proj;
 	
 		glUseProgram(id);
@@ -160,11 +178,11 @@ public:
 		{
 			Character ch = chars[(unsigned int)*p];
 
-			float xpos = x + ch.bx*fontSize;
-			float ypos = y - (ch.sy - ch.by) * fontSize;
+			float xpos = x + ch.bx;
+			float ypos = y - (ch.sy - ch.by);
 
-			float w = ch.sx * fontSize;
-			float h = ch.sy * fontSize;
+			float w = ch.sx;
+			float h = ch.sy;
 
 			float verts[6][4] = {
 				{xpos    , ypos + h, 0, 0},
@@ -183,11 +201,18 @@ public:
 
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 
-			x += (ch.advance >> 6) * fontSize;
+			x += (ch.advance >> 6);
+			width += (ch.advance >> 6);
+			
+			if(ch.sy > height)
+				height = ch.sy;
 		}
 
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
+		
+		x = tmpX;
+		y = tmpY;
 	}
 	
 };

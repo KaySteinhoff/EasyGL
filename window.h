@@ -1,9 +1,40 @@
-#include "shader.h"
-#include "Mouse.h"
-#include "EventHandler.h"
+#pragma once
+
+class MouseArgs : public EventArgs
+{
+public:
+	float x, y;
+	MouseArgs(float x, float y)
+	{
+		this->x = x;
+		this->y = y;
+	}
+};
+
+class ModArgs : public EventArgs
+{
+public:
+	int mods;
+	ModArgs(int mods)
+	{
+		this->mods = mods;
+	}
+};
+
+class KeyArgs : public EventArgs
+{
+public:
+	int key, mods;
+	KeyArgs(int key, int mods)
+	{
+		this->key = key;
+		this->mods = mods;
+	}
+};
 
 class Window
 {
+private:
 	inline static bool mLeftDown = false;
 	inline static bool mRightDown = false;
 	inline static int _mods = 0;
@@ -16,6 +47,7 @@ class Window
 	inline static bool keyDown = false;
 	inline static bool kold = false;
 
+protected:
 	static void MouseButtonDown(GLFWwindow* window, int button, int action, int mods)
 	{
 		_mods = mods;
@@ -54,26 +86,18 @@ public:
 
 	void (*RenderFunction)();
 	
-	EventHandler<void (*)(int, int)> MouseMove;
-	//void (*MouseMove)(int dx, int dy);
+	EventHandler MouseMove;
 		
-	EventHandler<void (*)(int)> MouseLeftButtonDown;
-	//void (*MouseLeftButtonDown)(int mods);
-	EventHandler<void (*)(int)> MouseLeftButtonUp;
-	//void (*MouseLeftButtonUp)(int mods);
+	EventHandler MouseLeftButtonDown;
+	EventHandler MouseLeftButtonUp;
 	
-	EventHandler<void (*)(int)> MouseRightButtonDown;
-	//void (*MouseRightButtonDown)(int mods);
-	EventHandler<void (*)(int)> MouseRightButtonUp;
-	//void (*MouseRightButtonUp)(int mods);
+	EventHandler MouseRightButtonDown;
+	EventHandler MouseRightButtonUp;
 	
-	EventHandler<void (*)(int, int)> KeyDown;
-	//void (*KeyDown)(int key, int mods);
-	EventHandler<void (*)(int, int)> KeyUp;
-	//void (*KeyUp)(int key, int mods);
+	EventHandler KeyDown;
+	EventHandler KeyUp;
 	
-	EventHandler<void (*)()> Resize;
-	//void (*Resize)();
+	EventHandler Resize;
 	
 	int numShaders;
 	Shader **shader;
@@ -138,7 +162,7 @@ public:
 				this->width = width;
 				this->height = height;
 				
-				Resize();
+				Resize(nullptr);
 			}
 			
 			glViewport(0, 0, width, height);
@@ -148,34 +172,36 @@ public:
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			if(mLeftDown && mLeftDown != Lold)
-			{
-				MouseLeftButtonDown(_mods);
+			{				
+				MouseLeftButtonDown(new ModArgs(_mods));
 				Lold = mLeftDown;
 			}
 			else if(!mLeftDown && mLeftDown != Lold)
-			{
-				MouseLeftButtonUp(_mods);
+			{				
+				MouseLeftButtonUp(new ModArgs(_mods));
 				Lold = mLeftDown;
 			}
 			
 			if(mRightDown && mRightDown != Rold)
-			{
-				MouseRightButtonDown(_mods);
+			{				
+				MouseRightButtonDown(new ModArgs(_mods));
 				Rold = mRightDown;
 			}
 			else if(!mRightDown && mRightDown != Rold)
-			{
-				MouseRightButtonUp(_mods);
+			{							
+				MouseRightButtonUp(new ModArgs(_mods));
 				Rold = mRightDown;
 			}
 
 			if(keyDown && keyDown != kold)
-			{
-				KeyDown(_key, charMods);
+			{			
+				KeyDown(new KeyArgs(_key, _mods));
 				kold = keyDown;
 			}else if(!keyDown && keyDown != kold)
 			{
-				KeyUp(_key, charMods);
+				KeyArgs keys = KeyArgs(_key, _mods);
+				
+				KeyUp(new KeyArgs(_key, _mods));
 				kold = keyDown;
 			}
 
@@ -184,9 +210,11 @@ public:
 	
 			if(cx != xpos || cy != ypos)
 			{
-				MouseMove(xpos-cx, ypos-cy);
+				MouseArgs mouse = MouseArgs(xpos-cx, ypos-cy);
+				
+				MouseMove(new MouseArgs(xpos-cx, ypos-cy));
 				Mouse::X = xpos;
-				Mouse::Y = ypos;
+				Mouse::Y = height-ypos;
 			}
 						
 			this->RenderFunction();
