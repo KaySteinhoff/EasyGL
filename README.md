@@ -72,7 +72,7 @@ Then just call Window::Show() to start it and Window::Destroy() to clean everyth
 
 ```C
 //                       Title	 |Width|Height|Number of shaders
-Window window = Window("Easy2Edit", 1366, 720  ,		  2		  );
+Window window = Window("Easy2Edit", 1366, 720 ,		2	 );
 
 window.backgroundColor[0] = 0.2; //R
 window.backgroundColor[1] = 0.3; //G
@@ -92,21 +92,6 @@ window.Destroy();
 
 ### Usage
 A shader in EasyGL can be seen as any object that is drawn to the screen like Images, Text, Buttons or 3D Models to name a few. They take in the verticies, the amount of verticies and a ShaderUpdate function which is optional but useful to update the shader values in order to have cleaner code. It also has the advantage of being able to update multiple shaders using the same update routine should it be practical.
-
-```C
-//Load the Example.jpg file and render the Image at 0, 0(bottom, left). A window has be passed down to the image as a parent
-Image img = Image("Example.jpg", 0, 0, &window);
-window.shader[0] = &img;
-window.shader[0]->ShaderUpdate = MyShaderUpdate;
-
-//Start the run loop and show the window with the image
-window.Show();
-```
-
-Every object rendered to the screen is a class at some point derriven from Shader. This is because of a few reasons: 
-1. To simplify the structure
-2. To simplify the management done by the user
-3. To uniformly create and update all rendered objects
 
 ```C
 void MyRenderFunction()
@@ -132,7 +117,18 @@ void MyShaderUpdate(GLint id, mat4x4 transform)
 	attribLoc = glGetUniformLocation(id, "view");
 	glUniformMatrix4fv(attribLoc, 1, GL_FALSE, (const GLfloat*)window.view);
 }
+
+//Load the Example.jpg file and render the Image at 0, 0(bottom, left). A window has be passed down to the image as a parent
+Image img = Image("Example.jpg", 0, 0, &window);
+window.shader[0] = &img;
+window.shader[0]->ShaderUpdate = MyShaderUpdate;
+window.RenderFunction = MyRenderFunction;
+
+//Start the run loop and show the window with the image
+window.Show();
 ```
+
+Every object rendered to the screen is a class at some point derriven from Shader.
 
 Should you want to set the Shaders of any class deriven from shader to a custom one you can call the Shader::LoadPartialShader(GLenum type, PartialShader* shader, const char* source) function and set the PartialShader that's passed to your code.
 
@@ -183,7 +179,7 @@ This will compile the shader code and put the id to the vertex/fragment shader i
 LoadShaderValues is a public funtion that takes in an enum value on how the shader is drawn. It also interprets the vertecies float array in a basic manner: 
 
 - The first three floats are x, y, z
-- The Last two floats are the uv-coordinates
+- The last two floats are the uv-coordinates
 
 This function is not meant to be used in your final product but give a basic interpretation to the vertex array until custom interpretation is needed(i.e. you add vertex colors or normals).
 
@@ -237,7 +233,7 @@ LoadPartialShader(
 ### Events
 
 To subscribe to events you need to create a class.
-This class acts as your listener and can be used to subscribe to events. After you instanciate an object of your listener class you'll need to subscribe to the event using the AddListener<T>(T* obj, void(T::*func)(EventArgs*)) function.
+This class acts as your listener and can be used to subscribe to events. After you instanciate an object of your listener class you'll need to subscribe to the event using the AddListener<T>(T* obj, void(T::\*func)(EventArgs\*)) function.
 
 ### Subscribing
 
@@ -266,6 +262,8 @@ window.Show();
 
 window.Destroy();
 ```
+
+To create an EventHandler it's rather simple. You just instanciate an object from EventHandler and invoke it, passing the EventArgs you want to pass to all listeners.
 
 ```C
 //The EventArgs class with all necesary event variables
@@ -297,7 +295,7 @@ class MyShader : public Shader{
 
 ```
 
-You can subscribe to one event with multiple member functions at the same time.
+You can subscribe to one event with multiple member functions, from one object at the same time.
 
 ### Unsubscribing
 
@@ -308,7 +306,7 @@ window.MouseMove.RemoveListener(0);
 ```
 
 _*NOTE*_
-I am aware that this is not the best solution but due to the difficulties of function pointers not holding non-static member functions this was the best solution I could come up with right now. I will definetly rework the Event system to be even more user friendly.
+I am aware that this is not the best solution but due to the difficulties of default function pointers not holding non-static member functions this was the best solution I could come up with right now. I will definetly rework the Event system to be even more user friendly.
 
 List of all events:
 
@@ -348,7 +346,7 @@ The Image constructor takes in four arguments: Image path, x, y, parent window.
 Image img = Image("Example.jpg", 0, 0, &parentWindow);
 ```
 
-The parent window should be set to the Window it is rendered in. This is because it needs to keep its relative position to it.
+The parent window should be set to the Window it is rendered in. It ofcourse can be set to another one although it wouldn't make much sense.
 
 To resize the image you can use the float array scale(size 3) of the shader to rescale it. Keep in mind that the scale is normalized to that axis, meaning: a width of 800 pixels and a height of 400 still keeps the scale at {1, 1, 1}! It does not change it to {2, 1, 1}!
 
@@ -483,6 +481,8 @@ Button myButton = Button("Button text", 0, 0, 150, 50, &parentWindow);
 |height|The current height|
 |OnClick|The EventHandler firing when the button is clicked|
 |OnRelease|The EventHandler firing when the button is released|
+|horizontalAlignment|A value from the HorizontalAlignment enum. Set to HorizontalAlignment::HCenter by default|
+|verticalAlignment|A value from the VerticalAlignment enum. Set to VerticalAlignment::VCenter by default|
 
 ### Mouse class
 
@@ -619,3 +619,11 @@ public:
 ```
 
 I'm not gonna show any examples for the render process nor the shaders as you're going to find 1001 examples on google that will work just fine.
+
+<a name="Dependencies">
+
+## Dependencies
+
+- GLFW
+- Freetype
+- OpenGL

@@ -3,5 +3,5 @@
 #include "EventHandler.h"
 #include "window.h"
 #include "text.h"
-#include "Text.h"
-#include "Button.h"
+#include "image.h"
+#include "button.h"
